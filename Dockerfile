@@ -20,10 +20,17 @@ COPY . .
 
 # Instala dependências do projeto
 RUN pip install --upgrade pip setuptools wheel
+
+# Instala numpy com binários otimizados
 RUN pip install numpy==1.26.4 --only-binary=:all:
+
+# Instala dependências do requirements.txt
 RUN pip install -r requirements.txt
 
-# Define variável de ambiente padrão para SQLite
+# Instala pacotes adicionais necessários
+RUN pip install redis python-dotenv
+
+# Define variável de ambiente padrão para SQLite (pode ser sobrescrita por DATABASE_URL do ambiente)
 ENV DATABASE_URL=sqlite:///data/agendamento.db
 
 # Cria diretório para persistência de dados
@@ -33,5 +40,4 @@ RUN mkdir -p /app/data
 EXPOSE 5000
 
 # Comando para iniciar o app com Gunicorn
-
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "600", "main:app"]
